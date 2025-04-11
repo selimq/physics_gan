@@ -9,7 +9,7 @@ from util.image_pool import ImagePool
 from .base_model import BaseModel
 from . import networks
 import sys
-
+import torch.nn.functional as F
 
 class CycleGANModel(BaseModel):
     def name(self):
@@ -103,6 +103,8 @@ class CycleGANModel(BaseModel):
 
         trans = Variable(self.input_trans, volatile=False)
         atmos = Variable(self.input_atmos, volatile=False)
+        trans = F.interpolate(trans, size=fake_B.shape[2:], mode='bilinear', align_corners=False)
+        atmos = F.interpolate(atmos, size=fake_B.shape[2:], mode='bilinear', align_corners=False)
         
         fake_A = fake_B * trans + atmos * (1 - trans)
         rec_A = fake_A

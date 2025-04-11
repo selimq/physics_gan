@@ -4,10 +4,7 @@ from data.base_data_loader import BaseDataLoader
 
 def CreateDataset(opt):
     dataset = None
-    if opt.dataset_mode == 'aligned':
-        from data.aligned_dataset import AlignedDataset
-        dataset = AlignedDataset()
-    elif opt.dataset_mode == 'aligned_deblur':
+    if opt.dataset_mode == 'aligned_deblur':
         from data.aligned_dataset_deblur import AlignedDataset
         dataset = AlignedDataset()
     elif opt.dataset_mode == 'aligned_deblur2':
@@ -21,6 +18,9 @@ def CreateDataset(opt):
         dataset = AlignedDataset()
     elif opt.dataset_mode == 'aligned_dehaze':
         from data.aligned_dataset_dehaze import AlignedDataset
+        dataset = AlignedDataset()
+    elif opt.dataset_mode == 'aligned_dehaze_test':
+        from data.aligned_dataset_dehaze_test import AlignedDataset
         dataset = AlignedDataset()
     elif opt.dataset_mode == 'unaligned':
         from data.unaligned_dataset import UnalignedDataset

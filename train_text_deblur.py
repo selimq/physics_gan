@@ -54,3 +54,4 @@ for epoch in range(opt.epoch_count, opt.niter + opt.niter_decay + 1):
     model.update_learning_rate()
 
 #python train_text_deblur.py --dataroot /mnt/lustre/liuyang1/Data_t1/text_deblur --model cycle_gan_deblur --dataset_mode aligned_deblur --no_dropout --no_flip --continue_train --which_epoch 75 --epoch_count 76
+#python train_text_deblur.py --dataroot /mnt/lustre/liuyang1/Data_t1/text_deblur --model cycle_gan_deblur --dataset_mode aligned_deblur --no_dropout --no_flip --continue_train --which_epoch 75 --epoch_count 76
