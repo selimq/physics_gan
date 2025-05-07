@@ -9,7 +9,7 @@ from util.image_pool import ImagePool
 from .base_model import BaseModel
 from . import networks
 import sys
-import util.bicubic_interp1 as bicubic_interp
+import util.bicubic_interp2 as bicubic_interp
 
 
 class CycleGANModel(BaseModel):
@@ -99,8 +99,8 @@ class CycleGANModel(BaseModel):
         fake_B = self.netG_A(real_A)
 
         [batch, channel, height, width] = fake_B.shape
-        fake_B_downsamp = Variable(torch.zeros([batch, channel, int(height/self.opt.scale), int(width/self.opt.scale)]).float().cuda())
-        fake_A = Variable(torch.zeros([batch, channel, height, width]).float().cuda())
+        fake_B_downsamp = Variable(torch.zeros([batch, channel, int(height/self.opt.scale), int(width/self.opt.scale)]).float())
+        fake_A = Variable(torch.zeros([batch, channel, height, width]).float())
 
         for batch_i in range(batch):
             for channel_i in range(channel):

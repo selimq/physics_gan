@@ -2,7 +2,7 @@
 aspect_ratio: 1.0
 batchSize: 1
 checkpoints_dir: ./checkpoints
-dataroot: ./datasets/coco
+dataroot: ./datasets/text
 dataset_mode: aligned
 display_id: 0
 display_port: 8097

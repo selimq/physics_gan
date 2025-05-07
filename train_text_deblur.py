@@ -3,55 +3,66 @@ from options.train_options import TrainOptions
 from data.data_loader import CreateDataLoader
 from models.models import create_model
 from util.visualizer import Visualizer
+import torch.multiprocessing
 
-opt = TrainOptions().parse()
-opt.which_model_netG = 'resnet_9blocks'
-data_loader = CreateDataLoader(opt)
-dataset = data_loader.load_data()
-dataset_size = len(data_loader)
-print('#training images = %d' % dataset_size)
+def main():
+    opt = TrainOptions().parse()
 
-model = create_model(opt)
-visualizer = Visualizer(opt)
-total_steps = 0
+    # Enforce known working values for this model
+    opt.which_model_netG = 'resnet_9blocks'
+    opt.dataset_mode = 'aligned_deblur'
+    opt.gpu_ids = []  # Use CPU; or set GPU ID(s) like [0] if you have GPU
+    opt.num_threads = 0  # Important for Windows
 
-for epoch in range(opt.epoch_count, opt.niter + opt.niter_decay + 1):
-    epoch_start_time = time.time()
-    epoch_iter = 0
+    data_loader = CreateDataLoader(opt)
+    dataset = data_loader.load_data()
+    dataset_size = len(data_loader)
+    print('#training images = %d' % dataset_size)
 
-    for i, data in enumerate(dataset):
-        iter_start_time = time.time()
-        visualizer.reset()
-        total_steps += opt.batchSize
-        epoch_iter += opt.batchSize
-        model.set_input(data)
-        model.optimize_parameters()
+    model = create_model(opt)
+    visualizer = Visualizer(opt)
+    total_steps = 0
 
-        if total_steps % opt.display_freq == 0:
-            save_result = total_steps % opt.update_html_freq == 0
-            visualizer.display_current_results(model.get_current_visuals(), epoch, save_result)
+    for epoch in range(opt.epoch_count, opt.niter + opt.niter_decay + 1):
+        epoch_start_time = time.time()
+        epoch_iter = 0
 
-        if total_steps % opt.print_freq == 0:
-            errors = model.get_current_errors()
-            t = (time.time() - iter_start_time) / opt.batchSize
-            visualizer.print_current_errors(epoch, epoch_iter, errors, t)
-            if opt.display_id > 0:
-                visualizer.plot_current_errors(epoch, float(epoch_iter)/dataset_size, opt, errors)
+        for i, data in enumerate(dataset):
+            iter_start_time = time.time()
+            visualizer.reset()
+            total_steps += opt.batchSize
+            epoch_iter += opt.batchSize
 
-        if total_steps % opt.save_latest_freq == 0:
-            print('saving the latest model (epoch %d, total_steps %d)' %
+            model.set_input(data)
+            model.optimize_parameters()
+
+            if total_steps % opt.display_freq == 0:
+                save_result = total_steps % opt.update_html_freq == 0
+                visualizer.display_current_results(model.get_current_visuals(), epoch, save_result)
+
+            if total_steps % opt.print_freq == 0:
+                errors = model.get_current_errors()
+                t = (time.time() - iter_start_time) / opt.batchSize
+                visualizer.print_current_errors(epoch, epoch_iter, errors, t)
+                if opt.display_id > 0:
+                    visualizer.plot_current_errors(epoch, float(epoch_iter)/dataset_size, opt, errors)
+
+            if total_steps % opt.save_latest_freq == 0:
+                print('saving the latest model (epoch %d, total_steps %d)' %
+                      (epoch, total_steps))
+                model.save('latest')
+
+        if epoch % opt.save_epoch_freq == 0:
+            print('saving the model at the end of epoch %d, iters %d' %
                   (epoch, total_steps))
             model.save('latest')
+            model.save(epoch)
 
-    if epoch % opt.save_epoch_freq == 0:
-        print('saving the model at the end of epoch %d, iters %d' %
-              (epoch, total_steps))
-        model.save('latest')
-        model.save(epoch)
+        print('End of epoch %d / %d \t Time Taken: %d sec' %
+              (epoch, opt.niter + opt.niter_decay, time.time() - epoch_start_time))
+        model.update_learning_rate()
 
-    print('End of epoch %d / %d \t Time Taken: %d sec' %
-          (epoch, opt.niter + opt.niter_decay, time.time() - epoch_start_time))
-    model.update_learning_rate()
-
-#python train_text_deblur.py --dataroot /mnt/lustre/liuyang1/Data_t1/text_deblur --model cycle_gan_deblur --dataset_mode aligned_deblur --no_dropout --no_flip --continue_train --which_epoch 75 --epoch_count 76
-#python train_text_deblur.py --dataroot /mnt/lustre/liuyang1/Data_t1/text_deblur --model cycle_gan_deblur --dataset_mode aligned_deblur --no_dropout --no_flip --continue_train --which_epoch 75 --epoch_count 76
+# 🔒 Required for Windows multiprocessing
+if __name__ == '__main__':
+    torch.multiprocessing.freeze_support()  # Optional but safe
+    main()

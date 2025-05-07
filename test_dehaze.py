@@ -35,12 +35,12 @@ def main():
     opt.serial_batches = True  # no shuffle
     opt.no_flip = True  # no flip
     opt.name = 'text_deblur'
-    opt.model = 'test'
+    opt.model = 'cycle_gan_sr'
     opt.phase = 'test'
-    opt.dataset_mode = 'single'
+    opt.dataset_mode = 'aligned_sr'
     opt.no_dropout = 'True'
     opt.resize_or_crop = ''
-    opt.dataroot = './datasets/dehazing_syn'
+    opt.dataroot = './datasets/test05'
     opt.which_model_netG = 'resnet_9blocks'
     # Comment if you use CUDA
     opt.gpu_ids = []

@@ -76,7 +76,7 @@ def ResizeImage(srcImage, scale):
   src_width = srcImage.shape[1]
   dest_width = int(src_width * scale)
   dest_height = int(src_height * scale)
-  destImage = torch.autograd.Variable(torch.zeros([dest_height, dest_width]).float().cuda())
+  destImage = torch.autograd.Variable(torch.zeros([dest_height, dest_width]).float())
 #  print(destImage.shape)
  
   for y in np.linspace(0, dest_height, num = dest_height, endpoint = False, dtype = int):
