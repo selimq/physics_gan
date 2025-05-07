@@ -49,7 +49,7 @@ def main():
     dataset = data_loader.load_data()
     psnr_all_epochs = np.array([])
 
-    for epoch in range(30,201,5):
+    for epoch in range(105,201,5):
         opt.which_epoch = str(epoch)
         model = create_model(opt)
         visualizer = Visualizer(opt)
