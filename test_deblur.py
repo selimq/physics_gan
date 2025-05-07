@@ -72,7 +72,7 @@ def main():
             psnr_epoch = np.append(psnr_epoch, PSNR(pred, gt))
 
         webpage.save()
-
+        print(opt.results_dir + opt.name + '/psnr_epoch(' + str(epoch) + ').npy', psnr_epoch)
         np.save(opt.results_dir + opt.name + '/psnr_epoch(' + str(epoch) + ').npy', psnr_epoch)
         psnr_all_epochs = np.append(psnr_all_epochs, np.mean(psnr_epoch))
 
